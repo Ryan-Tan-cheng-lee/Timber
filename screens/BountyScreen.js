@@ -1,36 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity,ImageBackground } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity, ImageBackground, Modal, Button } from 'react-native';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
-import { ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
 
 export default function FriendScreen() {
   const [fontsLoaded] = useFonts({
     'Just Another Hand': require('../assets/fonts/JustAnotherHand-Regular.ttf'),
   });
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
+  const [isNotificationModalVisible, setIsNotificationModalVisible] = useState(false);
+
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
     fetchFriends();
   }, []);
 
+  const [selectedFriend, setSelectedFriend] = useState(null);
+
   const navigation = useNavigation();
   const handleBackButtonPress = (ScreenName) => {
     navigation.navigate(ScreenName);
   };
 
-
   const handleFriendPress = (friend) => {
-    // Handle the friend press event here
-    console.log('Friend pressed:', friend);
+    setSelectedFriend(friend);
+    setIsConfirmationModalVisible(true);
   };
 
-  const bountyAddingPress = () => {
-    // Handle the friend press event here
-    console.log('bounty added');
+  const handleAcceptBounty = () => {
+    setIsConfirmationModalVisible(false);
+    setIsNotificationModalVisible(true);
+
+    // Update the status of the selected bounty
+    const updatedFriends = friends.map((friend) => {
+      if (friend === selectedFriend) {
+        return {
+          ...friend,
+          status: 'accepted',
+        };
+      }
+      return friend;
+    });
+
+    setFriends(updatedFriends);
   };
 
   const fetchFriends = async () => {
@@ -58,6 +73,7 @@ export default function FriendScreen() {
             requestTitle: friend.title,
             image: imageMapping[imageIndex], // Assign the appropriate image based on the index
             bountyDetails: friend.description,
+            status: 'pending', // Add a new property to track the status of the bounty
           };
         })
       );
@@ -74,42 +90,89 @@ export default function FriendScreen() {
 
   return (
     <ImageBackground
-    source={require('../assets/TimberBG.png')}
-    style={styles.background}
-  >
-    <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-      <View style={styles.backButtonContainer}>
-      <TouchableOpacity onPress={() => handleBackButtonPress("Home")}>
-        <Ionicons name="arrow-back" size={70} color="black" />
-      </TouchableOpacity>
-      </View>
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.title}>Bounty</Text>
-          <TouchableOpacity style={styles.plusButton} onPress={() => bountyAddingPress()}>
-            <Ionicons name="add-circle" size={55} color="#FAC143" />
+      source={require('../assets/TimberBG.png')}
+      style={styles.background}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity onPress={() => handleBackButtonPress("Home")}>
+            <Ionicons name="arrow-back" size={70} color="black" />
           </TouchableOpacity>
         </View>
-        {friends.map((friend, index) => (
-          <TouchableOpacity key={index} style={styles.bountyContainer} onPress={() => handleFriendPress(friend)}>
-            <View style={styles.leftSection}>
-              <View style={styles.friendContainer}>
-                <Image source={friend.image} style={styles.friendImage} />
-                <Text style={styles.friendName}>{friend.name}</Text>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>Bounty</Text>
+            <TouchableOpacity
+              style={styles.plusButton}
+              onPress={() => bountyAddingPress()}
+            >
+              <Ionicons name="add-circle" size={55} color="#FAC143" />
+            </TouchableOpacity>
+          </View>
+          {friends.map((friend, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.bountyContainer,
+                friend.status === 'accepted' && { backgroundColor: 'green' },
+              ]}
+              onPress={() => handleFriendPress(friend)}
+            >
+              <View style={styles.leftSection}>
+                <View style={styles.friendContainer}>
+                  <Image source={friend.image} style={styles.friendImage} />
+                  <Text style={styles.friendName}>{friend.name}</Text>
+                </View>
               </View>
+              <View style={styles.rightSection}>
+                <Text numberOfLines={2} style={styles.bountyName}>
+                  {friend.requestTitle}
+                </Text>
+                <Text numberOfLines={2} ellipsizeMode="tail" style={styles.bountyDescription}>
+                  {friend.bountyDetails}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+      {isConfirmationModalVisible && (
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Do you want to accept this bounty?</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonYes]}
+                onPress={handleAcceptBounty}
+              >
+                <Text style={styles.buttonText}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonNo]}
+                onPress={() => setIsConfirmationModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>No</Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.rightSection}>
-              <Text numberOfLines={2} style={styles.bountyName}>
-                {friend.requestTitle}
-              </Text>
-              <Text numberOfLines={2} ellipsizeMode="tail" style={styles.bountyDescription}>
-                {friend.bountyDetails}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+          </View>
+        </View>
+      )}
+      {isNotificationModalVisible && (
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Telehandle has been copied onto clipboard!</Text>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.modalButtonClose]}
+              onPress={() => setIsNotificationModalVisible(false)}
+            >
+              <Text style={styles.buttonText}>X</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </ImageBackground>
   );
 }
@@ -119,7 +182,7 @@ const styles = StyleSheet.create({
     paddingBottom: 250,
   },
   container: {
-    width: '90%',
+    width: 380,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -127,7 +190,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 30,
     top: 50,
-    left:20,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -162,7 +224,6 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 320, // Increase the width as desired
   },
-  
   leftSection: {
     flex: 1,
   },
@@ -188,20 +249,79 @@ const styles = StyleSheet.create({
     fontFamily: 'Just Another Hand',
     fontSize: 40,
     color: 'black',
-    textAlign: 'center', // Add this line to center-align the text
+    marginBottom: 10,
   },
   bountyDescription: {
-    fontSize: 25,
+    fontSize: 20,
     fontFamily: 'Just Another Hand',
-    marginTop: 10,
     color: 'black',
-    textAlign: 'center', // Add this line to center-align the text
   },
-  
+  modalContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    height: 300,
+    width: 300,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalText: {
+    fontSize: 50,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontFamily: 'Just Another Hand',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButton: {
+    left: 4,
+    height: 70,
+    width: 120,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    marginHorizontal: 10,
+  },
+  modalButtonYes: {
+    backgroundColor: 'green',
+  },
+  modalButtonNo: {
+    backgroundColor: 'red',
+  },
+  modalButtonClose: {
+    backgroundColor: 'grey',
+  },
+  buttonText: {
+    color: 'white',
+    top: 6,
+    fontSize: 50,
+    fontFamily: 'Just Another Hand',
+    textAlign: 'center',
+  },
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   backButtonContainer: {
     position: 'absolute',
-    top: 100,
-    left: 35,
+    top: 95,
+    left: 20,
     zIndex: 1,
   },
 });
