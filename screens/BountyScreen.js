@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity,ImageBackground } from 'react-native';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function FriendScreen() {
   const [fontsLoaded] = useFonts({
@@ -15,10 +17,11 @@ export default function FriendScreen() {
     fetchFriends();
   }, []);
 
-  const handleBackButtonPress = () => {
-    // Handle the back button press event here
-    // For example, you can navigate to the previous screen or perform any other desired action
+  const navigation = useNavigation();
+  const handleBackButtonPress = (ScreenName) => {
+    navigation.navigate(ScreenName);
   };
+
 
   const handleFriendPress = (friend) => {
     // Handle the friend press event here
@@ -70,12 +73,15 @@ export default function FriendScreen() {
   }
 
   return (
+    <ImageBackground
+    source={require('../assets/TimberBG.png')}
+    style={styles.background}
+  >
     <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
       <View style={styles.backButtonContainer}>
-        <TouchableOpacity  onPress={() =>
-        navigation.navigate('Home')}>
-          <Ionicons name="arrow-back" size={70} color="black" />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleBackButtonPress("Home")}>
+        <Ionicons name="arrow-back" size={70} color="black" />
+      </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
@@ -104,6 +110,7 @@ export default function FriendScreen() {
         ))}
       </View>
     </ScrollView>
+    </ImageBackground>
   );
 }
 
@@ -112,13 +119,15 @@ const styles = StyleSheet.create({
     paddingBottom: 250,
   },
   container: {
+    width: '90%',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: 'white',
     borderRadius: 30,
     top: 50,
-    width: 380,
+    left:20,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -192,7 +201,7 @@ const styles = StyleSheet.create({
   backButtonContainer: {
     position: 'absolute',
     top: 100,
-    left: 10,
+    left: 35,
     zIndex: 1,
   },
 });

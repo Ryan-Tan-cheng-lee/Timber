@@ -1,18 +1,26 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity,ImageBackground } from 'react-native';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function FriendScreen() {
   const [fontsLoaded] = useFonts({
     'Just Another Hand': require('../assets/fonts/JustAnotherHand-Regular.ttf'),
   });
-  const handleBackButtonPress = () => {
-    // Handle the back button press event here
-    // For example, you can navigate to the previous screen or perform any other desired action
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
+
+  const navigation = useNavigation();
+  const handleBackButtonPress = (ScreenName) => {
+    navigation.navigate(ScreenName);
   };
+  
+
 
   const friends = [
     {
@@ -47,16 +55,18 @@ export default function FriendScreen() {
     },
   ];
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
-  }
+  
 
   return (
+    <ImageBackground
+    source={require('../assets/TimberBG.png')}
+    style={styles.background}
+  >
     <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
       <View style={styles.backButtonContainer}>
-        <TouchableOpacity onPress={() => handleBackButtonPress()}>
-          <Ionicons name="arrow-back" size={70} color="black" />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleBackButtonPress("Home")}>
+        <Ionicons name="arrow-back" size={70} color="black" />
+      </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <Text style={styles.title}>Friend List</Text>
@@ -88,15 +98,15 @@ export default function FriendScreen() {
         ))}
       </View>
     </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   scrollViewContent: {
-    flexGrow: 0,
+    flexGrow: 1,
     width: '100%',
-    height: 600,
-    paddingBottom: 100,
+    height: 1150,
   },
   container: {
     flex: 1,
@@ -186,7 +196,7 @@ const styles = StyleSheet.create({
   backButtonContainer: {
     position: 'absolute',
     top: 70,
-    left: -10,
+    left: 10,
     zIndex: 1,
   },
 });

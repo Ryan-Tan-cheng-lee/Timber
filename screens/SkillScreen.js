@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity,ImageBackground } from 'react-native';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SkillScreen() {
+  const navigation = useNavigation();
+  const handleBackButtonPress = (ScreenName) => {
+    navigation.navigate(ScreenName);
+  };
+
   const [fontsLoaded] = useFonts({
     'Just Another Hand': require('../assets/fonts/JustAnotherHand-Regular.ttf'),
   });
@@ -87,20 +93,20 @@ export default function SkillScreen() {
     }
   };
 
-  const handleBackButtonPress = () => {
-    // Handle the back button press event here
-    // For example, you can navigate to the previous screen or perform any other desired action
-  };
+
 
   if (!fontsLoaded) {
     return <AppLoading />;
   }
 
   return (
-    
+    <ImageBackground
+    source={require('../assets/TimberBG.png')}
+    style={styles.background}
+  >
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.backButtonContainer}>
-      <TouchableOpacity onPress={() => handleBackButtonPress()}>
+      <TouchableOpacity onPress={() => handleBackButtonPress("Home")}>
         <Ionicons name="arrow-back" size={70} color="black" />
       </TouchableOpacity>
     </View>
@@ -155,10 +161,15 @@ export default function SkillScreen() {
         </View>
       </View>
     </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   scrollViewContent: {
     flexGrow: 1,
     width: '100%',

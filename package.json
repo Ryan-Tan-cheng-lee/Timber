@@ -20,7 +20,7 @@
     "expo-status-bar": "~1.4.4",
     "link": "^1.5.1",
     "navigation": "^6.2.0",
-    "react": "18.2.0",
+    "react": "^18.2.0",
     "react-native": "^0.71.8",
     "react-native-paper": "^5.8.0",
     "react-native-progress": "^5.0.0",
