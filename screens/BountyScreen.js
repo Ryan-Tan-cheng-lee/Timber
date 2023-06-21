@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity, ImageBackground, Modal, Button } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Image,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+  Modal,
+  Button,
+  RefreshControl,
+} from 'react-native';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import BottomNav from '../components/BottomNav';
 
-export default function FriendScreen() {
+export default function BountyScreen() {
   const [fontsLoaded] = useFonts({
     'Just Another Hand': require('../assets/fonts/JustAnotherHand-Regular.ttf'),
   });
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
   const [isNotificationModalVisible, setIsNotificationModalVisible] = useState(false);
-
   const [friends, setFriends] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchFriends();
@@ -21,9 +33,10 @@ export default function FriendScreen() {
   const [selectedFriend, setSelectedFriend] = useState(null);
 
   const navigation = useNavigation();
-  const handleBackButtonPress = (ScreenName) => {
+  const handleButtonPress = (ScreenName) => {
     navigation.navigate(ScreenName);
   };
+  
 
   const handleFriendPress = (friend) => {
     setSelectedFriend(friend);
@@ -64,6 +77,7 @@ export default function FriendScreen() {
           const friendResponse = await fetch(
             `http://timber-api-env.eba-tvcu62mw.ap-southeast-2.elasticbeanstalk.com/api/userProfile?id=${friend.postedBy}`
           );
+          
           const friendData = await friendResponse.json();
 
           const imageIndex = index % 3; // Calculate the index of the Friend image (0, 1, or 2)
@@ -79,9 +93,16 @@ export default function FriendScreen() {
       );
 
       setFriends(updatedFriends);
+      setRefreshing(false); // Set refreshing to false once the data is fetched
     } catch (error) {
       console.error('Error fetching friends:', error);
+      setRefreshing(false); // Set refreshing to false even if an error occurs
     }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true); // Set refreshing to true when the user pulls down the screen
+    fetchFriends();
   };
 
   if (!fontsLoaded) {
@@ -89,16 +110,14 @@ export default function FriendScreen() {
   }
 
   return (
-    <ImageBackground
-      source={require('../assets/TimberBG.png')}
-      style={styles.background}
-    >
+    <ImageBackground source={require('../assets/TimberBG.png')} style={styles.background}>
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <View style={styles.backButtonContainer}>
-          <TouchableOpacity onPress={() => handleBackButtonPress("Home")}>
+          <TouchableOpacity onPress={() => handleButtonPress('Home')}>
             <Ionicons name="arrow-back" size={70} color="black" />
           </TouchableOpacity>
         </View>
@@ -107,7 +126,7 @@ export default function FriendScreen() {
             <Text style={styles.title}>Bounty</Text>
             <TouchableOpacity
               style={styles.plusButton}
-              onPress={() => bountyAddingPress()}
+              onPress={() => handleButtonPress('BountyAdder')}
             >
               <Ionicons name="add-circle" size={55} color="#FAC143" />
             </TouchableOpacity>
@@ -173,6 +192,7 @@ export default function FriendScreen() {
           </View>
         </View>
       )}
+      <BottomNav showBottomNav={true} /> 
     </ImageBackground>
   );
 }

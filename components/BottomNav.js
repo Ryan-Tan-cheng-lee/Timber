@@ -1,13 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function BottomNav() {
+export default function BottomNav({ showBottomNav }) {
   const navigation = useNavigation();
 
   const handleTabPress = (screenName) => {
     navigation.navigate(screenName);
   };
+
+  if (!showBottomNav) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -38,7 +42,7 @@ export default function BottomNav() {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.tab}
-          onPress={() => handleTabPress('Friend')}
+          onPress={() => handleTabPress('Setting')}
         >
           <Image source={require('../assets/Settings.png')} style={styles.icon} />
         </TouchableOpacity>
@@ -58,6 +62,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: 'white',
   },
+  // Rest of your styles...
+
+
   addTaskTab: {
     alignItems: 'center',
     width: 170,
@@ -114,3 +121,4 @@ const styles = StyleSheet.create({
     bottom: 27,
   },
 });
+

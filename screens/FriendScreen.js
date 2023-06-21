@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity,ImageBackground } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity,ImageBackground, Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import BottomNav from '../components/BottomNav';
 
 
 export default function FriendScreen() {
@@ -19,7 +20,11 @@ export default function FriendScreen() {
   const handleBackButtonPress = (ScreenName) => {
     navigation.navigate(ScreenName);
   };
-  
+  const Requester = () => {
+    
+      Alert.alert('SORRY!', 'Available in the next patch!', [{ text: 'Close' }]);
+    
+  };
 
 
   const friends = [
@@ -60,8 +65,7 @@ export default function FriendScreen() {
   return (
     <ImageBackground
     source={require('../assets/TimberBG.png')}
-    style={styles.background}
-  >
+    style={styles.background}>
     <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
       <View style={styles.backButtonContainer}>
       <TouchableOpacity onPress={() => handleBackButtonPress("Home")}>
@@ -74,7 +78,7 @@ export default function FriendScreen() {
           <View key={index} style={styles.friendContainer}>
             <View style={styles.friendImageContainer}>
               <Image source={friend.image} style={styles.friendImage} />
-              <TouchableOpacity style={styles.requestButtonContainer}>
+              <TouchableOpacity onPress={Requester} style={styles.requestButtonContainer}>
                 <Text style={styles.requestButtonText}>Request for Help!</Text>
               </TouchableOpacity>
             </View>
@@ -98,6 +102,7 @@ export default function FriendScreen() {
         ))}
       </View>
     </ScrollView>
+    <BottomNav showBottomNav={true} /> 
     </ImageBackground>
   );
 }

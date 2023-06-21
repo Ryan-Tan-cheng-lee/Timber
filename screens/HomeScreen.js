@@ -3,6 +3,7 @@ import { View, ScrollView, StyleSheet, ImageBackground, Image, Text } from 'reac
 import { Svg, Circle } from 'react-native-svg';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
+import BottomNav from '../components/BottomNav';
 
 export default function HomeScreen() {
   const [fontsLoaded] = useFonts({
@@ -122,6 +123,7 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+      <BottomNav showBottomNav={true} /> 
     </ImageBackground>
   );
 }

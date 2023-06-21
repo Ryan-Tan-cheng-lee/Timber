@@ -5,6 +5,7 @@ import AppLoading from 'expo-app-loading';
 import { ProgressBar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import BottomNav from '../components/BottomNav';
 
 export default function SkillScreen() {
   const navigation = useNavigation();
@@ -161,6 +162,7 @@ export default function SkillScreen() {
         </View>
       </View>
     </ScrollView>
+      <BottomNav showBottomNav={true} /> 
     </ImageBackground>
   );
 }
