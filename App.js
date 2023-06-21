@@ -21,8 +21,8 @@ export default function App() {
       <ImageBackground source={require('./assets/TimberBG.png')} style={styles.background}>
         <View style={styles.container}>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Bounty" component={BountyScreen} />
             <Stack.Screen name="Skill" component={SkillScreen} />
             <Stack.Screen name="Friend" component={FriendScreen} />
