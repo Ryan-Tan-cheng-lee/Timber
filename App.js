@@ -10,6 +10,7 @@ import SkillScreen from './screens/SkillScreen';
 import BountyRequestScreen from './screens/BountyRequestScreen';
 import LoginScreen from './screens/LoginScreen';
 import SettingScreen from './screens/SettingScreen';
+import WorkEntryScreen from './screens/WorkEntryScreen';
 
 const Stack = createNativeStackNavigator();
 LogBox.ignoreAllLogs();
@@ -27,6 +28,7 @@ export default function App() {
             <Stack.Screen name="Friend" component={FriendScreen} />
             <Stack.Screen name="BountyAdder" component={BountyRequestScreen} />
             <Stack.Screen name="Setting" component={SettingScreen} />
+            <Stack.Screen name="WorkEntry" component={WorkEntryScreen} />
           </Stack.Navigator>
         </View>
       </ImageBackground>

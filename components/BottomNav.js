@@ -17,7 +17,7 @@ export default function BottomNav({ showBottomNav }) {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.addTaskTab}
-        onPress={() => handleTabPress('Friend')}
+        onPress={() => handleTabPress('WorkEntry')}
       >
         <Image source={require('../assets/AddPost.png')} style={styles.iconTop} />
       </TouchableOpacity>
